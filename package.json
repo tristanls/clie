@@ -1,0 +1,21 @@
+{
+  "name": "clie",
+  "version": "0.1.0",
+  "description": "Command line with evented composition",
+  "main": "index.js",
+  "dependencies": {
+    "abbrev": "1.0.4",
+    "nopt": "2.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tristanls/node-clie.git"
+  },
+  "keywords": [
+    "cli",
+    "evented",
+    "command-line"
+  ],
+  "author": "Tristan Slominski <tristan.slominski@gmail.com>",
+  "license": "MIT"
+}

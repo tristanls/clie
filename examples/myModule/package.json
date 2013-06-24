@@ -1,0 +1,14 @@
+{
+  "name": "my-module",
+  "version": "0.1.2",
+  "description": "An example module",
+  "bin": {
+    "my-module": "bin/cli.js"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "clie": "*"
+  },
+  "author": "Tristan Slominski <tristan.slominski@gmail.com>",
+  "license": "MIT"
+}
