@@ -2,7 +2,13 @@
   "name": "clie",
   "version": "0.1.0",
   "description": "Command line with evented composition",
+  "scripts": {
+    "test": "node scripts/test.js"
+  },
   "main": "index.js",
+  "devDependencies": {
+    "nodeunit": "0.8.1"
+  },
   "dependencies": {
     "abbrev": "1.0.4",
     "nopt": "2.1.1"

@@ -1,8 +1,33 @@
 /*
- * index.js: clie
- *
- * (C) 2013 Tristan Slominski
- */
+
+index.js - clie
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Tristan Slominski
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+*/ 
 "use strict";
 
 var abbrev = require('abbrev'),
@@ -116,47 +141,48 @@ function clie (configuration) {
 };
 
 clie.command = function command (func) {
-    var emitter = new events.EventEmitter();
     var wrapper = function (args) {
-        if (args.params && args.params.usage && wrapper.usage) {
-            wrapper.data(wrapper.usage);
-            wrapper.end();
-            return wrapper;
+        var emitter = new events.EventEmitter();
+        var invocation = {};
+
+        invocation.data = function () {
+            var args = Array.prototype.slice.call(arguments, 0);
+            args.unshift('data');
+            process.nextTick(function () {
+                emitter.emit.apply(emitter, args);
+            });
+            return invocation;
+        };
+
+        invocation.emit = function () {
+            return emitter.emit.apply(emitter, arguments);
+        };
+
+        invocation.end = function () {
+            process.nextTick(function () {
+                emitter.emit('end');
+            });
+            return invocation;
+        };        
+
+        invocation.error = function (error) {
+            process.nextTick(function () {
+                emitter.emit('error', error);
+            });
+            return invocation;
+        };
+
+        invocation.on = function () {
+            return emitter.on.apply(emitter, arguments);
+        };        
+
+        if (args && args.params && args.params.usage && wrapper.usage) {
+            invocation.data(wrapper.usage);
+            invocation.end();
+            return invocation;
         }
-        func(args);
-        return wrapper;
+        func.call(invocation, args);
+        return invocation;
     };
-
-    wrapper.data = function () {
-        var args = Array.prototype.slice.call(arguments, 0);
-        args.unshift('data');
-        process.nextTick(function () {
-            emitter.emit.apply(emitter, args);
-        });
-        return wrapper;
-    };
-
-    wrapper.emit = function () {
-        return emitter.emit.apply(emitter, arguments);
-    };
-
-    wrapper.end = function () {
-        process.nextTick(function () {
-            emitter.emit('end');
-        });
-        return wrapper;
-    };
-
-    wrapper.error = function (error) {
-        process.nextTick(function () {
-            emitter.emit('error', error);
-        });
-        return wrapper;
-    };
-
-    wrapper.on = function () {
-        return emitter.on.apply(emitter, arguments);
-    };
-
     return wrapper;
 };
