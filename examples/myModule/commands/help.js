@@ -8,7 +8,8 @@
 var clie = require('clie');
 
 var help = module.exports = clie.command(function (args) {
-	help.data(help.usage).end();
+	var self = this;
+    self.data(help.usage).end();
 });
 
 help.usage = [

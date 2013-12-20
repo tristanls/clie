@@ -61,7 +61,8 @@ commandEmitter.on('error', function (error) {
 var clie = require('clie');
 
 var one = module.exports = clie.command(function (args) {
-	one.data('one').end();
+	var self = this;
+    self.data('one').end();
 });
 
 one.usage = [
@@ -81,17 +82,18 @@ To `require` the module the command belongs to, it must be called within the com
 var clie = require('clie');
 
 var two = module.exports = clie.command(function (args) {
+    var self = this;
 	var myModule = require('../index.js');
 
-	if (args.params.usage) return two.data(two.usage).end();
+	if (args.params.usage) return self.data(two.usage).end();
 
 	if (args.params.one) {
 		var oneEmitter = myModule.commands.one(args);
-		oneEmitter.on('data', two.data);
-		oneEmitter.on('error', two.error);
-		oneEmitter.on('end', two.end);
+		oneEmitter.on('data', self.data);
+		oneEmitter.on('error', self.error);
+		oneEmitter.on('end', self.end);
 	} else {
-		two.data('two').end();
+		self.data('two').end();
 	}
 });
 
