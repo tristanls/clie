@@ -118,7 +118,7 @@ function clie (configuration) {
 clie.command = function command (func) {
     var emitter = new events.EventEmitter();
     var wrapper = function (args) {
-        if (args.params.usage && wrapper.usage) {
+        if (args.params && args.params.usage && wrapper.usage) {
             wrapper.data(wrapper.usage);
             wrapper.end();
             return wrapper;
