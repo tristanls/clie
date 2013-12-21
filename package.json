@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:tristanls/node-clie.git"
+    "url": "git@github.com:tristanls/clie.git"
   },
   "keywords": [
     "cli",
