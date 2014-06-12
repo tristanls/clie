@@ -7,11 +7,11 @@
   },
   "main": "index.js",
   "devDependencies": {
-    "nodeunit": "0.8.1"
+    "nodeunit": "0.9.x"
   },
   "dependencies": {
-    "abbrev": "1.0.4",
-    "nopt": "2.1.1"
+    "abbrev": "1.0.5",
+    "nopt": "3.0.0"
   },
   "repository": {
     "type": "git",
