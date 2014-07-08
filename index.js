@@ -27,7 +27,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
-*/ 
+*/
 "use strict";
 
 var abbrev = require('abbrev'),
@@ -163,7 +163,7 @@ clie.command = function command (func) {
                 emitter.emit('end');
             });
             return invocation;
-        };        
+        };
 
         invocation.error = function (error) {
             process.nextTick(function () {
@@ -172,9 +172,13 @@ clie.command = function command (func) {
             return invocation;
         };
 
+        invocation.listeners = function () {
+            return emitter.listeners.apply(emitter, arguments);
+        };
+
         invocation.on = function () {
             return emitter.on.apply(emitter, arguments);
-        };        
+        };
 
         if (args && args.params && args.params.usage && wrapper.usage) {
             invocation.data(wrapper.usage);
