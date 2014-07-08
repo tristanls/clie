@@ -155,7 +155,11 @@ clie.command = function command (func) {
         };
 
         invocation.emit = function () {
-            return emitter.emit.apply(emitter, arguments);
+            var args = Array.prototype.slice.call(arguments, 0);
+            process.nextTick(function () {
+                emitter.emit.apply(emitter, args);
+            })
+            return invocation;
         };
 
         invocation.end = function () {
