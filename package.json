@@ -1,6 +1,6 @@
 {
   "name": "clie",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Command line with evented composition",
   "scripts": {
     "test": "node scripts/test.js"
