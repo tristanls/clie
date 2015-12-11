@@ -4,7 +4,7 @@ index.js - clie
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Tristan Slominski
+Copyright (c) 2013-2015 Tristan Slominski
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -30,12 +30,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 "use strict";
 
-var abbrev = require('abbrev'),
-    events = require('events'),
-    fs = require('fs'),
-    nopt = require('nopt'),
-    path = require('path'),
-    util = require('util');
+var abbrev = require("abbrev");
+var events = require("events");
+var fs = require("fs");
+var nopt = require("nopt");
+var path = require("path");
+var util = require("util");
 
 module.exports = clie;
 
@@ -47,7 +47,7 @@ function clie (configuration) {
         commandCache: {},
         commandList: [],
         knownOpts: {
-            'h': Boolean  // builtin help flag
+            "h": Boolean  // builtin help flag
         }
     };
 
@@ -62,7 +62,7 @@ function clie (configuration) {
 
         if (!command) return; // nothing to do if can't require
 
-        var commandName = path.basename(file, '.js');
+        var commandName = path.basename(file, ".js");
         cli.commandList.push(commandName);
 
         if (command.aliases && util.isArray(command.aliases)) {
@@ -71,20 +71,7 @@ function clie (configuration) {
             });
         }
 
-        if (command.knownOpts) {
-            Object.keys(command.knownOpts).forEach(function (option) {
-                if (!command.knownOpts[option]) return;
-
-                cli.knownOpts[option] = cli.knownOpts[option] || [];
-                if (util.isArray(command.knownOpts[option])) {
-                    command.knownOpts[option].forEach(function (optionType) {
-                        cli.knownOpts[option].push(optionType);
-                    });
-                } else {
-                    cli.knownOpts[option].push(command.knownOpts[option]);
-                }
-            });
-        }
+        clie.extendKnownOpts(cli, command);
 
         if (cli.commandCache[commandName]) return;
 
@@ -147,7 +134,7 @@ clie.command = function command (func) {
 
         invocation.data = function () {
             var args = Array.prototype.slice.call(arguments, 0);
-            args.unshift('data');
+            args.unshift("data");
             process.nextTick(function () {
                 emitter.emit.apply(emitter, args);
             });
@@ -164,14 +151,24 @@ clie.command = function command (func) {
 
         invocation.end = function () {
             process.nextTick(function () {
-                emitter.emit('end');
+                emitter.emit("end");
             });
             return invocation;
         };
 
         invocation.error = function (error) {
             process.nextTick(function () {
-                emitter.emit('error', error);
+                emitter.emit("error", error);
+            });
+            return invocation;
+        };
+
+        invocation.exit = function(exitCode)
+        {
+            exitCode = exitCode || 0;
+            process.nextTick(function()
+            {
+                emitter.emit("exit", exitCode);
             });
             return invocation;
         };
@@ -184,7 +181,8 @@ clie.command = function command (func) {
             return emitter.on.apply(emitter, arguments);
         };
 
-        if (args && args.params && args.params.usage && wrapper.usage) {
+        if (args && args.params && args.params.usage && wrapper.usage
+            && !wrapper.commands) {
             invocation.data(wrapper.usage);
             invocation.end();
             return invocation;
@@ -193,4 +191,45 @@ clie.command = function command (func) {
         return invocation;
     };
     return wrapper;
+};
+
+clie.extendKnownOpts = function(command, subcommand)
+{
+    if (subcommand.knownOpts)
+    {
+        Object.keys(subcommand.knownOpts).forEach(function(option)
+        {
+            if (!subcommand.knownOpts[option])
+            {
+                return;
+            }
+            command.knownOpts[option] = command.knownOpts[option] || [];
+            if (!util.isArray(command.knownOpts[option]))
+            {
+                var opt = command.knownOpts[option];
+                command.knownOpts[option] = [];
+                command.knownOpts[option].push(opt);
+            }
+            if (util.isArray(subcommand.knownOpts[option]))
+            {
+                subcommand.knownOpts[option].forEach(function(optionType)
+                {
+                    command.knownOpts[option].push(optionType);
+                });
+            }
+            else
+            {
+                command.knownOpts[option].push(subcommand.knownOpts[option]);
+            }
+        });
+    }
+};
+
+clie.invokeSubcommand = function(command, subcommand, args)
+{
+    var invocation = subcommand(args);
+    invocation.on("data", command.data);
+    invocation.on("error", command.error);
+    invocation.on("end", command.end);
+    invocation.on("exit", command.exit);
 };

@@ -1,6 +1,6 @@
 # clie
 
-_Stability: 2 - [Unstable](https://github.com/tristanls/stability-index#stability-2---unstable)_
+_Stability: 1 - [Experimental](https://github.com/tristanls/stability-index#stability-1---experimental)_
 
 Evented command-line.
 
@@ -102,3 +102,15 @@ two.usage = [
   "           options: --one (Display 'one' instead of 'two')"
 ].join('\n');
 ```
+
+## Releases
+
+We follow semantic versioning policy ([semver.org](http://semver.org/)) with a caveat:
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+>MAJOR version when you make incompatible API changes,<br/>
+>MINOR version when you add functionality in a backwards-compatible manner, and<br/>
+>PATCH version when you make backwards-compatible bug fixes.
+
+**caveat**: Major version zero is a special case indicating development version that may make incompatible API changes without incrementing MAJOR version.
